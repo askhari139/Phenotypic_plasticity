@@ -3,13 +3,12 @@ Created on Tue 12.December.2019
 
 @author: Kishore
 
+code_description: This code contains a function that requires a topo file as an input and outputs the number of postive
+and negative cycles, the edges that they traverse through, and the length of each feedback loop.
+
 """
 import numpy as np 
-# from bmodel.base import Bmodel 
-#import matplotlib.pyplot as plt 
 import os
-#import csv
-#from scipy import stats
 import networkx as nx
 import sys
 
