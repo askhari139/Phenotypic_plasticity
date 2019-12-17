@@ -1,59 +1,56 @@
-Perturber <- function(topo_file, directory = getwd()){#browser()
-    library(tidyverse)
-    library(magrittr)
-    library(stringr)
-    directory = str_remove(topo_file, ".topo")
-    if(!dir.exists(directory)) dir.create(directory)
-    topo_name <- topo_file %>% str_remove(".topo")
-    
-    topo_original <- read.delim(topo_file, stringsAsFactors = F, sep = " ")
-    
-    components <- unique(c(topo_original$Source, topo_original$Target))
-    
-    network_total <- data.frame(Source = rep(components, each = length(components)), 
-                                Target = rep(components, length(components)),
-                                Act = 1, Inh = 2) %>% gather(key = "Name", value = "Type", -Source, -Target)
-    network_total <- network_total[, -3]
-    
-    colnames(topo_original)[3] <- "Type_o"
-    
-    network_total <- merge(network_total, topo_original, by = c("Source", "Target"), all = T)
-    network_total[is.na(network_total)] <- 0
-    network_total <- network_total[, c(1,2,4,3)]
-    colnames(network_total)[3] <- "Old"
-    colnames(topo_original)[3] <- "Type"
-    
-    df_list <- apply(network_total, 1, function(x){#browser()
-        df <- topo_original
-        if (x[3] == x[4])
-        {
-            x[4] <- 0
-            df <- df[-which(df$Source == x[1] & df$Target == x[2]),]
-        }
-        else if(x[3] == 0)
-            df <- rbind.data.frame(df, x[c(1,2,4)])
-        else
-            df$Type[df$Source == x[1] & df$Target == x[2]] <- x[4]
-        
-        name <- paste0(x, collapse = "_")
-        if(!str_detect(directory, "/$")) directory %<>% paste0("/")
-        write_delim(df, paste0(directory, name, ".topo"), delim = " ")
-    })
-    0
-}
+# set working directory to the topo_files directory
+library(tidyverse)
+library(stringr)
 
 filez <- list.files(".", "topo")
-dummy <- sapply(filez, Perturber)
+netwroks <- filez %>% str_remove(".topo")
+command <- paste0("python ../../codes/Feedback_loops/Positive_loops.py ", paste(filez, collapse = " "))
+system(command)
+dir.create("../../Figures/Loop_data")
+system("mv *csv ../../Figures/Loop_data")
+setwd("../../Figures/Loop_data")
 
-folders <- filez %>% str_remove(".topo")
+edgelist <- function(x){
+    x <- str_split(x, ",") %>% unlist
+    l <- length(x)
+    x <- c(x, x[1])
+    x_mod <- sapply(1:l, function(y){
+        paste(x[c(y, y+1)],collapse = ",") 
+    })
+}
 
-dummy <- lapply(folders, function(x){#browser()
-    setwd(x)
-    f <- list.files(".", "topo")
-    command <- paste0("python JSD_plas.py ", paste(f, collapse = " "))
-    system(command)
-    df <- read.csv("pos.csv")
-    colnames(df) <- c("Network", "Pos_loops", "Neg_loops")
-    setwd("..")
-    write.csv(df, paste0(x, ".csv"), row.names = F)
+filez <- list.files(".", ".csv")
+dummy <- lapply(filez, function(x){
+    df <- read.csv(x)
+    loopEdges <- sapply(df$Cycles, edgelist) %>% lapply(function(y){
+        d <- data.frame(table(y))
+        colnames(d) <- c("Edges", "Freq")
+        d
+    }) %>% reduce(merge, by = "Edges", all = T)
+    loopEdges[is.na(loopEdges)] <- 0
+    loopLengths <- lapply(2:ncol(loopEdges), function(y){
+        cycle <- df$Cycles[y]
+        cycle_length <- length(cycle %>% str_split(",") %>% unlist)
+        loopEdges[, y]*cycle_length
+    }) %>% reduce(cbind.data.frame)
+    
+    nloopEdges <- sapply(df$Cycles, edgelist) %>% lapply(function(y){
+        d <- data.frame(table(y))
+        colnames(d) <- c("Edges", "Freq")
+        d
+    }) %>% reduce(merge, by = "Edges", all = T)
+    nloopEdges[is.na(nloopEdges)] <- 0
+    nloopLengths <- lapply(2:ncol(nloopEdges), function(y){
+        cycle <- df$Cycles[y]
+        cycle_length <- length(cycle %>% str_split(",") %>% unlist)
+        loopEdges[, y]*cycle_length
+    }) %>% reduce(cbind.data.frame)
+    
+    d <- data.frame(Edges = loopEdges$Edges, pLoopCount = rowSums(loopEdges[, -1]), pLoopLengthAvg = apply(loopLengths, 1, mean), 
+               pLoopLengthStd = apply(loopLengths, 1, sd),
+               )
+    
+    
+    write.csv(d, paste0(str_remove(x, ".csv"), "_edges.csv"))
+    
 })

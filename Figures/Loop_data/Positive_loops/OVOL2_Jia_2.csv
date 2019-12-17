@@ -1,0 +1,9 @@
+,Cycles,Nature,Edge_count
+0,SNAIL,N,1
+1,ZEB,P,1
+2,OVOL,N,1
+3,"OVOL,ZEB",P,2
+4,"miR34,SNAIL,ZEB",P,3
+5,"miR34,SNAIL,miR200,ZEB",P,4
+6,"miR34,SNAIL",P,2
+7,"miR200,ZEB",P,2
