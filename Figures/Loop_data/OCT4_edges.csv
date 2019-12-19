@@ -1,0 +1,9 @@
+"","Edges","pLoopCount","pLoopLengthAvg","pLoopLengthStd","nLoopCount","nLoopLengthAvg","nLoopLengthStd"
+"1","ZEB,ZEB",1,2,1,0,0,0
+"2","miR145,OCT4",1,4,2,1,2,1
+"3","OCT4,miR145",1,4,2,0,0,0
+"4","miR145,ZEB",1,2,1,0,0,0
+"5","ZEB,miR145",1,2,1,1,2,1
+"6","miR200,ZEB",1,2,1,1,4,2
+"7","ZEB,miR200",1,2,1,0,0,0
+"8","OCT4,miR200",0,0,0,1,2,1

@@ -22,7 +22,7 @@ edgelist <- function(x){
 filez <- list.files(".", ".csv")
 dummy <- lapply(filez, function(x){
     df <- read.csv(x)
-    loopEdges <- sapply(df$Cycles, edgelist) %>% lapply(function(y){
+    loopEdges <- sapply(df$Cycles[df$Nature == "P"], edgelist) %>% lapply(function(y){
         d <- data.frame(table(y))
         colnames(d) <- c("Edges", "Freq")
         d
@@ -34,23 +34,34 @@ dummy <- lapply(filez, function(x){
         loopEdges[, y]*cycle_length
     }) %>% reduce(cbind.data.frame)
     
-    nloopEdges <- sapply(df$Cycles, edgelist) %>% lapply(function(y){
+    nloopEdges <- sapply(df$Cycles[df$Nature == "N"], edgelist) %>% lapply(function(y){
         d <- data.frame(table(y))
         colnames(d) <- c("Edges", "Freq")
         d
-    }) %>% reduce(merge, by = "Edges", all = T)
+    })
+    if (length(nloopEdges) > 0)
+    nloopEdges <- nloopEdges%>% reduce(merge, by = "Edges", all = T)
+    else
+        nloopEdges <- data.frame(x = 1,y = 1)
     nloopEdges[is.na(nloopEdges)] <- 0
     nloopLengths <- lapply(2:ncol(nloopEdges), function(y){
         cycle <- df$Cycles[y]
         cycle_length <- length(cycle %>% str_split(",") %>% unlist)
-        loopEdges[, y]*cycle_length
-    }) %>% reduce(cbind.data.frame)
+        nloopEdges[, y]*cycle_length
+    }) %>% reduce(cbind.data.frame) %>% data.frame
     
-    d <- data.frame(Edges = loopEdges$Edges, pLoopCount = rowSums(loopEdges[, -1]), pLoopLengthAvg = apply(loopLengths, 1, mean), 
-               pLoopLengthStd = apply(loopLengths, 1, sd),
-               )
+    d <- data.frame(Edges = loopEdges$Edges, pLoopCount = rowSums(loopEdges[, -1]), 
+                    pLoopLengthAvg = apply(loopLengths, 1, function(x){sum(x)/sum(x!=0)}), 
+               pLoopLengthStd = apply(loopLengths, 1, sd))
+    if (is.data.frame(nloopEdges[, -1]))
+    {
+    d1 <- data.frame(Edges = nloopEdges$Edges, nLoopCount = rowSums(nloopEdges[, -1]), 
+                                nLoopLengthAvg = apply(nloopLengths, 1, function(x){sum(x)/sum(x!=0)}), 
+               nLoopLengthStd = apply(nloopLengths, 1, sd))
     
+    d <- merge(d, d1, by = "Edges", all = T)}
+    d[is.na(d)] <- 0
     
     write.csv(d, paste0(str_remove(x, ".csv"), "_edges.csv"))
-    
+    d
 })
