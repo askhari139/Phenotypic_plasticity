@@ -1,0 +1,23 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(stringr)
+```
+
+
+```{r cars}
+f <- list.files(".", "csv")
+df <- lapply(f, function(x){
+    d <- read.csv(x)
+    d[[1]] <- d[[1]] %>% str_split("") %>% lapply(unique) %>% sapply(paste0, collapse = "")
+    colnames(d)[1] <- "Phases"
+    d %>% group_by(Phases) %>% summarise_if(is.numeric, sum)
+}) %>% reduce(merge, by = "Phases", all = T)
+write.csv(df, "Phases.csv")
+```
+

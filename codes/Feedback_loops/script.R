@@ -20,6 +20,7 @@ edgelist <- function(x){
 }
 
 filez <- list.files(".", ".csv")
+filez <- filez[!str_detect(filez, "edge")]
 dummy <- lapply(filez, function(x){
     df <- read.csv(x)
     loopEdges <- sapply(df$Cycles[df$Nature == "P"], edgelist) %>% lapply(function(y){
