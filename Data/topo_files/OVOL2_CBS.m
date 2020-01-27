@@ -1,0 +1,39 @@
+function dydt = OVOL2_CBS(t, y, Act_of_exTGFBToSNAIL,Num_of_exTGFBToSNAIL,Trd_of_exTGFBToSNAIL,Act_of_TGFBToSNAIL,Num_of_TGFBToSNAIL,Trd_of_TGFBToSNAIL,Act_of_SNAILToVIMENTIN,Num_of_SNAILToVIMENTIN,Trd_of_SNAILToVIMENTIN,Inh_of_SNAILToSNAIL,Num_of_SNAILToSNAIL,Trd_of_SNAILToSNAIL,Act_of_SNAILToZEB1,Num_of_SNAILToZEB1,Trd_of_SNAILToZEB1,Act_of_ZEB1ToVIMENTIN,Num_of_ZEB1ToVIMENTIN,Trd_of_ZEB1ToVIMENTIN,Inh_of_SNAILToEcadherin,Num_of_SNAILToEcadherin,Trd_of_SNAILToEcadherin,Inh_of_ZEB1ToEcadherin,Num_of_ZEB1ToEcadherin,Trd_of_ZEB1ToEcadherin,Inh_of_OVOLToVIMENTIN,Num_of_OVOLToVIMENTIN,Trd_of_OVOLToVIMENTIN,Inh_of_SNAILTomiR34,Num_of_SNAILTomiR34,Trd_of_SNAILTomiR34,Inh_of_miR34ToSNAIL,Num_of_miR34ToSNAIL,Trd_of_miR34ToSNAIL,Inh_of_ZEB1TomiR34,Num_of_ZEB1TomiR34,Trd_of_ZEB1TomiR34,Inh_of_OVOLToZEB1,Num_of_OVOLToZEB1,Trd_of_OVOLToZEB1,Inh_of_ZEB1ToOVOL,Num_of_ZEB1ToOVOL,Trd_of_ZEB1ToOVOL,Inh_of_ZEB1TomiR200,Num_of_ZEB1TomiR200,Trd_of_ZEB1TomiR200,Inh_of_miR200ToZEB1,Num_of_miR200ToZEB1,Trd_of_miR200ToZEB1,Inh_of_SNAILTomiR200,Num_of_SNAILTomiR200,Trd_of_SNAILTomiR200,Inh_of_OVOLToTGFB,Num_of_OVOLToTGFB,Trd_of_OVOLToTGFB,Inh_of_miR200ToTGFB,Num_of_miR200ToTGFB,Trd_of_miR200ToTGFB,Inh_of_OVOLToSNAIL,Num_of_OVOLToSNAIL,Trd_of_OVOLToSNAIL,Prod_of_exTGFB,Deg_of_exTGFB,Prod_of_TGFB,Deg_of_TGFB,Prod_of_SNAIL,Deg_of_SNAIL,Prod_of_ZEB1,Deg_of_ZEB1,Prod_of_OVOL,Deg_of_OVOL,Prod_of_miR34,Deg_of_miR34,Prod_of_miR200,Deg_of_miR200,Prod_of_VIMENTIN,Deg_of_VIMENTIN,Prod_of_Ecadherin,Deg_of_Ecadherin)
+exTGFB = y(1);
+TGFB = y(2);
+SNAIL = y(3);
+ZEB1 = y(4);
+OVOL = y(5);
+miR34 = y(6);
+miR200 = y(7);
+VIMENTIN = y(8);
+Ecadherin = y(9);
+HillsexTGFB_SNAIL = (1 + (Act_of_exTGFBToSNAIL - 1)*exTGFB^Num_of_exTGFBToSNAIL/(exTGFB^Num_of_exTGFBToSNAIL + Trd_of_exTGFBToSNAIL^Num_of_exTGFBToSNAIL))/Act_of_exTGFBToSNAIL;
+HillsTGFB_SNAIL = (1 + (Act_of_TGFBToSNAIL - 1)*TGFB^Num_of_TGFBToSNAIL/(TGFB^Num_of_TGFBToSNAIL + Trd_of_TGFBToSNAIL^Num_of_TGFBToSNAIL))/Act_of_TGFBToSNAIL;
+HillsSNAIL_VIMENTIN = (1 + (Act_of_SNAILToVIMENTIN - 1)*SNAIL^Num_of_SNAILToVIMENTIN/(SNAIL^Num_of_SNAILToVIMENTIN + Trd_of_SNAILToVIMENTIN^Num_of_SNAILToVIMENTIN))/Act_of_SNAILToVIMENTIN;
+HillsSNAIL_SNAIL = 1 + (Inh_of_SNAILToSNAIL - 1)*SNAIL^Num_of_SNAILToSNAIL/(SNAIL^Num_of_SNAILToSNAIL + Trd_of_SNAILToSNAIL^Num_of_SNAILToSNAIL);
+HillsSNAIL_ZEB1 = (1 + (Act_of_SNAILToZEB1 - 1)*SNAIL^Num_of_SNAILToZEB1/(SNAIL^Num_of_SNAILToZEB1 + Trd_of_SNAILToZEB1^Num_of_SNAILToZEB1))/Act_of_SNAILToZEB1;
+HillsZEB1_VIMENTIN = (1 + (Act_of_ZEB1ToVIMENTIN - 1)*ZEB1^Num_of_ZEB1ToVIMENTIN/(ZEB1^Num_of_ZEB1ToVIMENTIN + Trd_of_ZEB1ToVIMENTIN^Num_of_ZEB1ToVIMENTIN))/Act_of_ZEB1ToVIMENTIN;
+HillsSNAIL_Ecadherin = 1 + (Inh_of_SNAILToEcadherin - 1)*SNAIL^Num_of_SNAILToEcadherin/(SNAIL^Num_of_SNAILToEcadherin + Trd_of_SNAILToEcadherin^Num_of_SNAILToEcadherin);
+HillsZEB1_Ecadherin = 1 + (Inh_of_ZEB1ToEcadherin - 1)*ZEB1^Num_of_ZEB1ToEcadherin/(ZEB1^Num_of_ZEB1ToEcadherin + Trd_of_ZEB1ToEcadherin^Num_of_ZEB1ToEcadherin);
+HillsOVOL_VIMENTIN = 1 + (Inh_of_OVOLToVIMENTIN - 1)*OVOL^Num_of_OVOLToVIMENTIN/(OVOL^Num_of_OVOLToVIMENTIN + Trd_of_OVOLToVIMENTIN^Num_of_OVOLToVIMENTIN);
+HillsSNAIL_miR34 = 1 + (Inh_of_SNAILTomiR34 - 1)*SNAIL^Num_of_SNAILTomiR34/(SNAIL^Num_of_SNAILTomiR34 + Trd_of_SNAILTomiR34^Num_of_SNAILTomiR34);
+HillsmiR34_SNAIL = 1 + (Inh_of_miR34ToSNAIL - 1)*miR34^Num_of_miR34ToSNAIL/(miR34^Num_of_miR34ToSNAIL + Trd_of_miR34ToSNAIL^Num_of_miR34ToSNAIL);
+HillsZEB1_miR34 = 1 + (Inh_of_ZEB1TomiR34 - 1)*ZEB1^Num_of_ZEB1TomiR34/(ZEB1^Num_of_ZEB1TomiR34 + Trd_of_ZEB1TomiR34^Num_of_ZEB1TomiR34);
+HillsOVOL_ZEB1 = 1 + (Inh_of_OVOLToZEB1 - 1)*OVOL^Num_of_OVOLToZEB1/(OVOL^Num_of_OVOLToZEB1 + Trd_of_OVOLToZEB1^Num_of_OVOLToZEB1);
+HillsZEB1_OVOL = 1 + (Inh_of_ZEB1ToOVOL - 1)*ZEB1^Num_of_ZEB1ToOVOL/(ZEB1^Num_of_ZEB1ToOVOL + Trd_of_ZEB1ToOVOL^Num_of_ZEB1ToOVOL);
+HillsZEB1_miR200 = 1 + (Inh_of_ZEB1TomiR200 - 1)*ZEB1^Num_of_ZEB1TomiR200/(ZEB1^Num_of_ZEB1TomiR200 + Trd_of_ZEB1TomiR200^Num_of_ZEB1TomiR200);
+HillsmiR200_ZEB1 = 1 + (Inh_of_miR200ToZEB1 - 1)*miR200^Num_of_miR200ToZEB1/(miR200^Num_of_miR200ToZEB1 + Trd_of_miR200ToZEB1^Num_of_miR200ToZEB1);
+HillsSNAIL_miR200 = 1 + (Inh_of_SNAILTomiR200 - 1)*SNAIL^Num_of_SNAILTomiR200/(SNAIL^Num_of_SNAILTomiR200 + Trd_of_SNAILTomiR200^Num_of_SNAILTomiR200);
+HillsOVOL_TGFB = 1 + (Inh_of_OVOLToTGFB - 1)*OVOL^Num_of_OVOLToTGFB/(OVOL^Num_of_OVOLToTGFB + Trd_of_OVOLToTGFB^Num_of_OVOLToTGFB);
+HillsmiR200_TGFB = 1 + (Inh_of_miR200ToTGFB - 1)*miR200^Num_of_miR200ToTGFB/(miR200^Num_of_miR200ToTGFB + Trd_of_miR200ToTGFB^Num_of_miR200ToTGFB);
+HillsOVOL_SNAIL = 1 + (Inh_of_OVOLToSNAIL - 1)*OVOL^Num_of_OVOLToSNAIL/(OVOL^Num_of_OVOLToSNAIL + Trd_of_OVOLToSNAIL^Num_of_OVOLToSNAIL);
+dydt = [Prod_of_exTGFB - Deg_of_exTGFB*exTGFB
+Prod_of_TGFB*HillsOVOL_TGFB*HillsmiR200_TGFB - Deg_of_TGFB*TGFB
+Prod_of_SNAIL*HillsexTGFB_SNAIL*HillsTGFB_SNAIL*HillsSNAIL_SNAIL*HillsmiR34_SNAIL*HillsOVOL_SNAIL - Deg_of_SNAIL*SNAIL
+Prod_of_ZEB1*HillsSNAIL_ZEB1*HillsOVOL_ZEB1*HillsmiR200_ZEB1 - Deg_of_ZEB1*ZEB1
+Prod_of_OVOL*HillsZEB1_OVOL - Deg_of_OVOL*OVOL
+Prod_of_miR34*HillsSNAIL_miR34*HillsZEB1_miR34 - Deg_of_miR34*miR34
+Prod_of_miR200*HillsZEB1_miR200*HillsSNAIL_miR200 - Deg_of_miR200*miR200
+Prod_of_VIMENTIN*HillsSNAIL_VIMENTIN*HillsZEB1_VIMENTIN*HillsOVOL_VIMENTIN - Deg_of_VIMENTIN*VIMENTIN
+Prod_of_Ecadherin*HillsSNAIL_Ecadherin*HillsZEB1_Ecadherin - Deg_of_Ecadherin*Ecadherin];

@@ -5,9 +5,9 @@ mes_node = str2double(input("Node number that is Mesenchymal : ", 's'));
 epi_node = str2double(input("Node number that is Epithelial : ", 's'));
 node_names = strings(n_nodes,1);
 
-% for i = 1:n_nodes
-%     node_names(i,1) = input(sprintf("Enter the node %d name : ", i), 's');
-% end
+for i = 1:n_nodes
+    node_names(i,1) = input(sprintf("Enter the node %d name : ", i), 's');
+end
 dat = zeros(1,n_nodes);
 corrupted = [];
 for i = n_sol_files % to collate all solutions
@@ -74,6 +74,8 @@ for i = n_sol_files % to calculate z-scores and phases
         phases = [phases;c];
     end
 end
+phase_char = char(phases);
+phases = arrayfun(@(x) strrep(string(unique(phase_char(x,:))), " ", ""), 1:size(phase_char,1));
 figure;
 phase_tab = cell2table(tabulate(phases));
 phase_tab = sortrows(phase_tab, 2, 'descend');
@@ -83,5 +85,5 @@ xticklabels(phase_tab.Var1);
 xtickangle(90);
 writetable(phase_tab, strcat(network, "_phase_frequency.csv"));
 dat_z = array2table(dat_z(2:end,:));
-% dat_z.Properties.VariableNames = node_names;
+dat_z.Properties.VariableNames = node_names;
 writetable(dat_z, strcat(network, "_zfull_mat.csv"));
