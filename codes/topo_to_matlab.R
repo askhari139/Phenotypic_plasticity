@@ -53,7 +53,9 @@ converter <- function(topo_file){
     Dequns[1] <- paste0("dydt = [", Dequns[1])
     Dequns[length(Dequns)] <- paste0(Dequns[length(Dequns)], "];")
     
-    defin_line <- paste0("function dydt = ", str_remove(topo_file, ".topo"), "(t, y, ", paste0(Parameters, collapse = ","),")")
+    defin_line <- c(paste0("function dydt = ", str_remove(topo_file, ".topo"), 
+                         "(t, y, p)"),
+                    paste0(Parameters, " = p(", 1:length(Parameters), ");"))
     
     gene_lines <- paste0(genes, " = y(", 1:length(genes), ")",  ";")
     
@@ -66,29 +68,70 @@ converter <- function(topo_file){
     
     ### Solver file - specific parameters
     
-    Parameter_listing <- paste0(paste0(Parameters, collapse = " = 0;"), " = 0;")
+    # Parameter_listing <- paste0(paste0(Parameters, collapse = " = 0;"), " = 0;")
+    Parameter_listing <- paste0("params = {'", paste0(Parameters, collapse = "', '"), "'};")
+    column_order1 <- c( paste0("prs_file = '", str_remove(topo_file, ".topo"), ".prs';"),
+                        paste0("prs_new = '", str_remove(topo_file, ".topo"), ".dat';"),
+                        paste0("copyfile(prs_file, prs_new);"),
+                        paste0("par_list = readtable(prs_new);"),
+                        paste0("par_list = string(par_list.Parameter);"),
+                        paste0("par_order = zeros(length(par_list),1);"),
+                        paste0("for i = 1:length(params)"),
+                        paste0("    par_order(i) = find(par_list == params(i));"),
+                        paste0("end"),
+                        paste0("n_nodes = sum(contains(par_list, 'Prod'));")
+    )
     
-    initial_cond <- paste0("y0 = [", paste0(rep("0", length(genes)), collapse = ","), "];")
-    t <- paste0("tspan = 1:1000;")
-    func_caller <- paste0("[t y] = ode45(@(t,y)func(t,y,", paste0(Parameters, collapse = ","), "), tspan, y0);")
+    parameter_read <- c(paste0("par_file = '", str_remove(topo_file, ".topo"), "_parameters.dat';"),
+                        paste0("parameters = table2array(readtable(par_file));"),
+                        paste0("parameters =  parameters(:, 3:end);"),
+                        paste0("tspan = 1:100;"),
+                        "ss_tot = zeros(1, n_nodes+1);",
+                        paste0("for i = 1:size(parameters,1)"),
+                        paste0("    p = parameters(i,par_order);"),
+                        "    p1 = parameters(i,:);",
+                        "    ss=zeros(1,n_nodes);",
+                        paste0("    lims = p1(1:n_nodes)./p1((1:n_nodes) + n_nodes);"),
+                        paste0("    for j = 1:100"),
+                        paste0("        y0 = lims.*rand(1,n_nodes);"),
+                        paste0("        [t y] = ode23s(@(t,y)", str_remove(topo_file, ".topo"),"(t,y,p), tspan, y0);"),
+                        paste0("        while sum(round((y(end, :) - y((end-1), :)), 3)) ~= 0"),
+                        "            y0 = y(end,:);",
+                        paste0("            [t y] = ode23s(@(t,y)", 
+                               str_remove(topo_file, ".topo"),"(t,y,p), tspan, y0);"),
+                        "        end",
+                        "        if all(abs(sum(ss - y(end, :),2)) > 0.01)",
+                        "            ss = [ss;y(end, :)];",
+                        "        end",
+                        "    end",
+                        "    ss = [repelem(i, size(ss(2:end,:),1))' ss(2:end, :)];",
+                        "    ss_tot = [ss_tot; ss];",
+                        "end",
+                        "ss_tot = unique(ss_tot, 'rows');",
+                        "ss_tot = array2table(ss_tot(2:end,:));",
+                        paste0("writetable(ss_tot, '",str_remove(topo_file, ".topo"), "_ss.csv');")
+                        )
     
-    defin_line_solver <- paste0("function dydt = ", str_remove(topo_file, ".topo"), "(t, y, ", paste0(Parameters, collapse = ","),")")
-    adaptive_iintegration <- c(paste0("while round((y(end, :) - y((end-1), :)), 3) ~=0 "), 
-                               "y0 = y(end, :);", func_caller, "end")
-    
-    full_code_solver <- c(Parameter_listing, initial_cond, t, func_caller, adaptive_iintegration)
-    
-    network_input <- paste0("topo_file = input('Enter the name of the network as in RACIPE : %s')")
+    full_code_solver <- c(Parameter_listing, column_order1, parameter_read)
     
     writeLines(text = full_code_solver, con = paste0(str_remove(topo_file, ".topo"), "_solver.m"))
     
 }
 
 
-setwd("E:/Github_projects/Phenotypic_plasticity/Data/topo_files/")
-
-topo_files <- list.files(".", ".topo")
-dummy <- sapply(topo_files, converter)
-
-### RACIPE simulation
+setwd("E:/Re-sims/Original/")
+dirs <- list.dirs(".", recursive = F)
+dirs <- dirs[-(str_detect(dirs, "RACIPE"))]
+dummy <- sapply(dirs, function(x){
+    setwd(x)
+    d2 <- list.dirs(".", recursive = F)
+    dummy2 <- sapply(d2, function(y){
+        setwd(y)
+        topo_file <- list.files(".", ".topo")
+        dummy <- converter(topo_file)
+        system(paste0("matlab -nodisplay -nosplash -nodesktop -r '", str_remove(topo_file, ".topo"), "_solver.m'"))
+        setwd("..")
+    })
+    setwd("..")
+})
 

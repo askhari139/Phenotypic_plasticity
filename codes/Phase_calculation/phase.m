@@ -35,7 +35,7 @@ dat = dat(2:end, :);
 M = mean(dat);
 S = std(dat);
 phases = [];
-dat_z = zeros(1,n_nodes);
+dat_z = zeros(1,(n_nodes + 1));
 for i = n_sol_files % to calculate z-scores and phases
     f = sprintf(strcat(network,'_solution_%d.dat'), i);
     d_master = table2array(readtable(f)); % read
@@ -43,7 +43,7 @@ for i = n_sol_files % to calculate z-scores and phases
     if i == 1
         d1 = (d-M)./S;
         writetable(table([d_master(:, 1:2) d1]), sprintf(strcat(network,'_solution_mat_z_%d.dat'), i));
-        dat_z = [dat_z;d1];
+        dat_z = [dat_z;[d_master(:,1) d1]];
         c1 = d1(:,epi_node).*d1(:,mes_node);
         c2 = d1(:,epi_node) + d1(:,mes_node);
         c = repelem("", length(c1))';
@@ -55,11 +55,12 @@ for i = n_sol_files % to calculate z-scores and phases
     else
         cm = strings([size(d,1), i]);
         d_m = d_master(:, 1:2);
+        par_col = d_master(:, 1);
         for j = 0:(i-1)
             colz = (1:n_nodes) + n_nodes*j;
             d1 = (d(:, colz) - M)./S;
             d_m = [d_m d1];
-            dat_z = [dat_z; d1];
+            dat_z = [dat_z; [par_col d1]];
             c1 = d1(:,epi_node).*d1(:,mes_node);
             c2 = d1(:,epi_node) + d1(:,mes_node);
             c = repelem("", length(c1))';
@@ -85,5 +86,5 @@ xticklabels(phase_tab.Var1);
 xtickangle(90);
 writetable(phase_tab, strcat(network, "_phase_frequency.csv"));
 dat_z = array2table(dat_z(2:end,:));
-dat_z.Properties.VariableNames = node_names;
+dat_z.Properties.VariableNames = ["ParameterIndex";node_names];
 writetable(dat_z, strcat(network, "_zfull_mat.csv"));
