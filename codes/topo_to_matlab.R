@@ -19,7 +19,7 @@ hill_shift <- function(Row)
     c(eqn, lKey, nKey, tKey)
 }
 
-converter <- function(topo_file){
+converter <- function(topo_file){#browser()
     
     df <- read.delim(topo_file, sep = " ", stringsAsFactors = F)
     if (ncol(df) != 3)
@@ -87,7 +87,7 @@ converter <- function(topo_file){
                         paste0("parameters =  parameters(:, 3:end);"),
                         paste0("tspan = 1:100;"),
                         "ss_tot = zeros(1, n_nodes+1);",
-                        paste0("for i = 1:size(parameters,1)"),
+                        paste0("parfor i = 1:size(parameters,1)"),
                         paste0("    p = parameters(i,par_order);"),
                         "    p1 = parameters(i,:);",
                         "    ss=zeros(1,n_nodes);",
@@ -125,11 +125,11 @@ dirs <- dirs[-(str_detect(dirs, "RACIPE"))]
 dummy <- sapply(dirs, function(x){
     setwd(x)
     d2 <- list.dirs(".", recursive = F)
-    dummy2 <- sapply(d2, function(y){
+    dummy2 <- sapply(d2, function(y){#browser()
         setwd(y)
         topo_file <- list.files(".", ".topo")
         dummy <- converter(topo_file)
-        system(paste0("matlab -nodisplay -nosplash -nodesktop -r '", str_remove(topo_file, ".topo"), "_solver.m'"))
+        # system(paste0("matlab -nodisplay -nosplash -nodesktop -r '", str_remove(topo_file, ".topo"), "_solver.m'"))
         setwd("..")
     })
     setwd("..")
