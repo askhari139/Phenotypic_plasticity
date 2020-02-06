@@ -24,7 +24,8 @@ converter <- function(topo_file){#browser()
     df <- read.delim(topo_file, sep = " ", stringsAsFactors = F)
     if (ncol(df) != 3)
         df <- read.delim(topo_file, sep = "\t", stringsAsFactors = F)
-    
+    df$Source <- str_remove_all(df$Source, "-")
+    df$Target <- str_remove_all(df$Target, "-")
     genes <- c(df[[1]], df[[2]]) %>% unique
     
     Hilleqns <- character()
@@ -75,6 +76,7 @@ converter <- function(topo_file){#browser()
                         paste0("copyfile(prs_file, prs_new);"),
                         paste0("par_list = readtable(prs_new);"),
                         paste0("par_list = string(par_list.Parameter);"),
+                        "par_list = arrayfun(@(x) replace(x, '-', ''),par_list);",
                         paste0("par_order = zeros(length(par_list),1);"),
                         paste0("for i = 1:length(params)"),
                         paste0("    par_order(i) = find(par_list == params(i));"),
@@ -121,7 +123,7 @@ converter <- function(topo_file){#browser()
 
 setwd("E:/Re-sims/Original/")
 dirs <- list.dirs(".", recursive = F)
-dirs <- dirs[-(str_detect(dirs, "RACIPE"))]
+dirs <- dirs[-(str_detect(dirs, "^RACIPE"))]
 dummy <- sapply(dirs, function(x){
     setwd(x)
     d2 <- list.dirs(".", recursive = F)
