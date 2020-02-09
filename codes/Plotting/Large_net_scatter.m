@@ -8,8 +8,8 @@ Plast = pertdata.Plasticity;
 NegFeed = pertdata.Negative;
 JSD = pertdata.JSDR;
 
-X1 = PosFeed - max(PosFeed);
-Xlab = '\Delta Positive feedback loops';
+X1 = JSD;
+Xlab = 'JSD from WT';
 max(X1) - (min(X1)-max(X1))*0.05
 min(X1) + (min(X1)-max(X1))*0.05
 Xmin = input('Xmin = ');
@@ -22,7 +22,7 @@ max(Y1) - (min(Y1)-max(Y1))*0.05
 min(Y1) + (min(Y1)-max(Y1))*0.05
 Ymin = input('Ymin = ');
 YtickS = input('YtickS = ');
-fileName = strcat(network, "_Plast_Pos");
+fileName = strcat(network, "_Pert_Plast_JSD");
 createfigure(X1, Y1, Xlab, Ylab, Xmin, XtickS, Ymin, YtickS, fileName);
 
 function createfigure(X1, Y1, Xlab, Ylab, Xmin, XtickS, Ymin, YtickS, fileName)
@@ -37,15 +37,15 @@ Xminl = min(X1) + (min(X1)-max(X1))*0.05;
 Yminl = min(Y1) + (min(Y1)-max(Y1))*0.05;
 [rho,p] = corr(X1, Y1);
 if p < 0.0001
-    str = 'p-value < 0.0001';
+    str = '****';
 elseif p < 0.001
-    str = 'p-value < 0.001';
+    str = '***';
 elseif p < 0.01
-    str = 'p-value < 0.01';
+    str = '**';
 elseif p < 0.05
-    str = 'p-value < 0.05';
+    str = '*';
 else
-    str = 'Insignificant correlation';
+    str = '';
 end
 rhos = string(rho);
 % Create figure
@@ -74,24 +74,27 @@ box(axes1,'on');
 Xtick = Xmin:XtickS:Xmax;
 Ytick = Ymin:YtickS:Ymax;
 set(axes1,'FontName','Arial','FontSize',20,'FontWeight','bold',...
-    'YTick',Ytick, 'XTick', Xtick);
+    'YTick',Ytick, 'XTick', Xtick, 'XTickLabelRotation',45);
+% annotation(figure1,'textbox',...
+%     [0.409088623115868 0.88139210844217 0.269982709320202 0.048742710120068],...
+% 0.627014953265936 0.215931978638381 0.269982709320203 0.048742710120068
+% 0.189088623115868 0.8760039210844217 0.269982709320202 0.048742710120068
+%     'String',...
+%     str,...
+%     'LineStyle','none',...
+%     'FontSize',16,...
+%     'FontName','Arial',...
+%     'FitBoxToText','off');
 annotation(figure1,'textbox',...
-    [0.409088623115868 0.88139210844217 0.269982709320202 0.048742710120068],...
-    'String',...
-    str,...
-    'LineStyle','none',...
-    'FontSize',16,...
-    'FontName','Arial',...
-    'FitBoxToText','off');
-annotation(figure1,'textbox',...
-    [0.189088623115868 0.8760039210844217 0.269982709320202 0.048742710120068],...
-    'String',sprintf("\\rho = %s", rhos),...
+    [0.577014953265936 0.265931978638381 0.269982709320203 0.048742710120068],...
+    'String',sprintf("\\rho = %s%s", rhos, str),...
     'LineStyle','none',...
     'FontSize',16,...
     'FontName','Arial',...
     'FitBoxToText','off');
 
-set(gcf, "position", [1 1 733 556]);
+set(gcf, "position", [1 1 650 500]);
 print(fileName, '-dtiff','-r600');
+savefig(fileName);
 
 end
