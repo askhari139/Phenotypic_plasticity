@@ -16,16 +16,18 @@ Xmin = input('Xmin = ');
 XtickS = input('XtickS = ');
 
 % Plasticity plot
-Y1 = Plast;
-Ylab = "PS1";
+Y1 = PosFeed-max(PosFeed);
+Ylab = "\Delta Positive feedback";
 max(Y1) - (min(Y1)-max(Y1))*0.05
 min(Y1) + (min(Y1)-max(Y1))*0.05
 Ymin = input('Ymin = ');
 YtickS = input('YtickS = ');
-fileName = strcat(network, "_Pert_Plast_JSD");
-createfigure(X1, Y1, Xlab, Ylab, Xmin, XtickS, Ymin, YtickS, fileName);
+fileName = strcat(network, "_3d_plot");
 
-function createfigure(X1, Y1, Xlab, Ylab, Xmin, XtickS, Ymin, YtickS, fileName)
+C1 = Plast;
+createfigure(X1, Y1, C1,Xlab, Ylab, Xmin, XtickS, Ymin, YtickS, fileName);
+
+function createfigure(X1, Y1, C1,Xlab, Ylab, Xmin, XtickS, Ymin, YtickS, fileName)
 %CREATEFIGURE(X1, Y1)
 %  X1:  scatter x
 %  Y1:  scatter y
@@ -56,7 +58,9 @@ axes1 = axes('Parent',figure1);
 hold(axes1,'on');
 
 % Create scatter
-scatter(X1,Y1,'MarkerFaceColor',[0 0.447058826684952 0.74117648601532]);
+% scatter(X1,Y1,'MarkerFaceColor',[0 0.447058826684952 0.74117648601532]);
+scatter(X1,Y1,36,C1, 'filled');
+colorbar;
 xlim(axes1, [Xminl Xmax]);
 ylim(axes1, [Yminl Ymax]);
 % Create ylabel
@@ -85,13 +89,13 @@ set(axes1,'FontName','Arial','FontSize',20,'FontWeight','bold',...
 %     'FontSize',16,...
 %     'FontName','Arial',...
 %     'FitBoxToText','off');
-annotation(figure1,'textbox',...
-    [0.577014953265936 0.265931978638381 0.269982709320203 0.048742710120068],...
-    'String',sprintf("\\rho = %s%s", rhos, str),...
-    'LineStyle','none',...
-    'FontSize',16,...
-    'FontName','Arial',...
-    'FitBoxToText','off');
+% annotation(figure1,'textbox',...
+%     [0.577014953265936 0.265931978638381 0.269982709320203 0.048742710120068],...
+%     'String',sprintf("\\rho = %s%s", rhos, str),...
+%     'LineStyle','none',...
+%     'FontSize',16,...
+%     'FontName','Arial',...
+%     'FitBoxToText','off');
 
 set(gcf, "position", [1 1 650 500]);
 print(fileName, '-dtiff','-r600');
