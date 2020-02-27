@@ -1,0 +1,39 @@
+
+-------------------------------------------
+The topo file contains the following genes:
+Gene_ID -- Gene_Name
+1 -- miR200
+2 -- ZEB
+3 -- SNAIL
+4 -- GRHL2
+-------------------------------------------
+Total number of genes = 4
+Total number of regulations = 7
+-------------------------------------------
+Amplification of the parameter ranges (production rates and thresholds)
+miR200	1.000000
+ZEB	1.000000
+SNAIL	1.000000
+GRHL2	1.000000
+
+-------------------T_test------------------
+Gene_ID -- Probs_over_T
+1 -- 0.468354
+2 -- 0.502174
+3 -- 0.537268
+4 -- 0.473688
+
+-----------------Stability-----------------
+#states -- Count
+1 -- 4621
+2 -- 5198
+3 -- 178
+4 -- 3
+5 -- 0
+6 -- 0
+7 -- 0
+8 -- 0
+9 -- 0
+10 -- 0
+---> Actual running time : 789.718750 seconds ( 0.219366 hours)
+The maximum running time is 23.500000.
