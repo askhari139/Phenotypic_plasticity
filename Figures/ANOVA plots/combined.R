@@ -1,5 +1,5 @@
 
-f <- list.files(".", "R_data", recursive = T)
+f <- list.files(".", "S_data", recursive = T)
 df <- lapply(f, function(x){
     read.csv(x, stringsAsFactors = F) %>% select(plast_2, JSD, pos_cycle) %>% 
         mutate(network = x %>% str_remove("_R_data.csv") %>% str_remove("Perturbations/"))

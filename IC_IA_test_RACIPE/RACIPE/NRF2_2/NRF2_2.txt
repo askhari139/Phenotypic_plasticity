@@ -1,0 +1,51 @@
+
+-------------------------------------------
+The topo file contains the following genes:
+Gene_ID -- Gene_Name
+1 -- X
+2 -- SNAIL
+3 -- miR34
+4 -- miR200
+5 -- ZEB
+6 -- KEAP1
+7 -- Ecadherin
+8 -- NRF2
+-------------------------------------------
+Total number of genes = 8
+Total number of regulations = 16
+-------------------------------------------
+Amplification of the parameter ranges (production rates and thresholds)
+X	1.000000
+SNAIL	1.000000
+miR34	1.000000
+miR200	1.000000
+ZEB	1.000000
+KEAP1	1.000000
+Ecadherin	1.000000
+NRF2	1.000000
+
+-------------------T_test------------------
+Gene_ID -- Probs_over_T
+1 -- 0.538955
+2 -- 0.543110
+3 -- 0.462551
+4 -- 0.492750
+5 -- 0.472478
+6 -- 0.505438
+7 -- 0.503263
+8 -- 0.485137
+
+-----------------Stability-----------------
+#states -- Count
+1 -- 3718
+2 -- 5201
+3 -- 944
+4 -- 58
+5 -- 7
+6 -- 1
+7 -- 1
+8 -- 0
+9 -- 1
+10 -- 69
+---> Actual running time : 2345.562500 seconds ( 0.651545 hours)
+The maximum running time is 23.500000.

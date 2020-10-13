@@ -1,0 +1,45 @@
+function dydt = GRHL2_0(t, y, p)
+Inh_of_miR200ToZEB = p(1);
+Num_of_miR200ToZEB = p(2);
+Trd_of_miR200ToZEB = p(3);
+Inh_of_ZEBTomiR200 = p(4);
+Num_of_ZEBTomiR200 = p(5);
+Trd_of_ZEBTomiR200 = p(6);
+Act_of_ZEBToZEB = p(7);
+Num_of_ZEBToZEB = p(8);
+Trd_of_ZEBToZEB = p(9);
+Inh_of_SNAILTomiR200 = p(10);
+Num_of_SNAILTomiR200 = p(11);
+Trd_of_SNAILTomiR200 = p(12);
+Act_of_SNAILToZEB = p(13);
+Num_of_SNAILToZEB = p(14);
+Trd_of_SNAILToZEB = p(15);
+Inh_of_ZEBToGRHL2 = p(16);
+Num_of_ZEBToGRHL2 = p(17);
+Trd_of_ZEBToGRHL2 = p(18);
+Inh_of_GRHL2ToZEB = p(19);
+Num_of_GRHL2ToZEB = p(20);
+Trd_of_GRHL2ToZEB = p(21);
+Prod_of_miR200 = p(22);
+Deg_of_miR200 = p(23);
+Prod_of_ZEB = p(24);
+Deg_of_ZEB = p(25);
+Prod_of_SNAIL = p(26);
+Deg_of_SNAIL = p(27);
+Prod_of_GRHL2 = p(28);
+Deg_of_GRHL2 = p(29);
+miR200 = y(1);
+ZEB = y(2);
+SNAIL = y(3);
+GRHL2 = y(4);
+HillsmiR200_ZEB = 1 + (Inh_of_miR200ToZEB - 1)*miR200^Num_of_miR200ToZEB/(miR200^Num_of_miR200ToZEB + Trd_of_miR200ToZEB^Num_of_miR200ToZEB);
+HillsZEB_miR200 = 1 + (Inh_of_ZEBTomiR200 - 1)*ZEB^Num_of_ZEBTomiR200/(ZEB^Num_of_ZEBTomiR200 + Trd_of_ZEBTomiR200^Num_of_ZEBTomiR200);
+HillsZEB_ZEB = (1 + (Act_of_ZEBToZEB - 1)*ZEB^Num_of_ZEBToZEB/(ZEB^Num_of_ZEBToZEB + Trd_of_ZEBToZEB^Num_of_ZEBToZEB))/Act_of_ZEBToZEB;
+HillsSNAIL_miR200 = 1 + (Inh_of_SNAILTomiR200 - 1)*SNAIL^Num_of_SNAILTomiR200/(SNAIL^Num_of_SNAILTomiR200 + Trd_of_SNAILTomiR200^Num_of_SNAILTomiR200);
+HillsSNAIL_ZEB = (1 + (Act_of_SNAILToZEB - 1)*SNAIL^Num_of_SNAILToZEB/(SNAIL^Num_of_SNAILToZEB + Trd_of_SNAILToZEB^Num_of_SNAILToZEB))/Act_of_SNAILToZEB;
+HillsZEB_GRHL2 = 1 + (Inh_of_ZEBToGRHL2 - 1)*ZEB^Num_of_ZEBToGRHL2/(ZEB^Num_of_ZEBToGRHL2 + Trd_of_ZEBToGRHL2^Num_of_ZEBToGRHL2);
+HillsGRHL2_ZEB = 1 + (Inh_of_GRHL2ToZEB - 1)*GRHL2^Num_of_GRHL2ToZEB/(GRHL2^Num_of_GRHL2ToZEB + Trd_of_GRHL2ToZEB^Num_of_GRHL2ToZEB);
+dydt = [Prod_of_miR200*HillsZEB_miR200*HillsSNAIL_miR200 - Deg_of_miR200*miR200
+Prod_of_ZEB*HillsmiR200_ZEB*HillsZEB_ZEB*HillsSNAIL_ZEB*HillsGRHL2_ZEB - Deg_of_ZEB*ZEB
+Prod_of_SNAIL - Deg_of_SNAIL*SNAIL
+Prod_of_GRHL2*HillsZEB_GRHL2 - Deg_of_GRHL2*GRHL2];
