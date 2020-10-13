@@ -1,6 +1,7 @@
 network = input('Enter network name: ', 's');
 PertFile = strcat(network, "_Pert.csv");
 pertdata = readtable(PertFile);
+index = find(pertdata.name == "WT");
 pertdata.Properties.VariableNames = ["Names", "Positive", "Negative", ...
     "FrusB", "Plasticity", "JSDR", "NoSigFrusB", "FrusR", "NoSigFrusR"];
 PosFeed = pertdata.Positive;
@@ -8,26 +9,26 @@ Plast = pertdata.Plasticity;
 NegFeed = pertdata.Negative;
 JSD = pertdata.JSDR;
 
-X1 = JSD;
-Xlab = 'JSD from WT';
+X1 = PosFeed-PosFeed(index);
+Xlab = '\Delta Positive Feedback Loops';
 max(X1) - (min(X1)-max(X1))*0.05
 min(X1) + (min(X1)-max(X1))*0.05
 Xmin = input('Xmin = ');
 XtickS = input('XtickS = ');
 
 % Plasticity plot
-Y1 = PosFeed-max(PosFeed);
-Ylab = "\Delta Positive feedback";
+Y1 = Plast/Plast(index);
+Ylab = "Fold change in PS1 from WT";
 max(Y1) - (min(Y1)-max(Y1))*0.05
 min(Y1) + (min(Y1)-max(Y1))*0.05
 Ymin = input('Ymin = ');
 YtickS = input('YtickS = ');
-fileName = strcat(network, "_3d_plot");
+fileName = strcat(network, "_Pos_plot");
 
-C1 = Plast;
-createfigure(X1, Y1, C1,Xlab, Ylab, Xmin, XtickS, Ymin, YtickS, fileName);
+% c1 = Plast/Plast(index);
+createfigure(X1, Y1, c1,Xlab, Ylab, Xmin, XtickS, Ymin, YtickS, fileName);
 
-function createfigure(X1, Y1, C1,Xlab, Ylab, Xmin, XtickS, Ymin, YtickS, fileName)
+function createfigure(X1, Y1,c1, Xlab, Ylab, Xmin, XtickS, Ymin, YtickS, fileName)
 %CREATEFIGURE(X1, Y1)
 %  X1:  scatter x
 %  Y1:  scatter y
@@ -59,8 +60,8 @@ hold(axes1,'on');
 
 % Create scatter
 % scatter(X1,Y1,'MarkerFaceColor',[0 0.447058826684952 0.74117648601532]);
-scatter(X1,Y1,36,C1, 'filled');
-colorbar;
+scatter(X1,Y1,36,'filled');
+% colorbar;
 xlim(axes1, [Xminl Xmax]);
 ylim(axes1, [Yminl Ymax]);
 % Create ylabel
@@ -89,13 +90,13 @@ set(axes1,'FontName','Arial','FontSize',20,'FontWeight','bold',...
 %     'FontSize',16,...
 %     'FontName','Arial',...
 %     'FitBoxToText','off');
-% annotation(figure1,'textbox',...
-%     [0.577014953265936 0.265931978638381 0.269982709320203 0.048742710120068],...
-%     'String',sprintf("\\rho = %s%s", rhos, str),...
-%     'LineStyle','none',...
-%     'FontSize',16,...
-%     'FontName','Arial',...
-%     'FitBoxToText','off');
+annotation(figure1,'textbox',...
+    [0.577014953265936 0.265931978638381 0.269982709320203 0.048742710120068],...
+    'String',sprintf("\\rho = %s%s", rhos, str),...
+    'LineStyle','none',...
+    'FontSize',16,...
+    'FontName','Arial',...
+    'FitBoxToText','off');
 
 set(gcf, "position", [1 1 650 500]);
 print(fileName, '-dtiff','-r600');
